@@ -85,7 +85,18 @@ using remove_const_t = typename remove_const<T>::type;
 
 
 template <typename To, typename From>
+struct is_convertible
+{
+    private:
+        template <typename U>
+        static auto test(void *) -> decltype(static_cast<To>(std::declval<U>()), std::true_type{});
 
+        template <typename U>
+        static std::false_type test(...) {}
+
+    public:
+        constexpr static bool { value = decltype(test<From(nullptr))::value };
+};
 int main()
 {
     static_assert(is_same<int, int>::value);
