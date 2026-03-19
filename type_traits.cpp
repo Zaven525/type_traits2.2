@@ -150,6 +150,23 @@ struct is_default_constructable
 template <typename T>
 using is_default_constructable_v = is_default_constructable::value;
 
+template <typename T>
+struct decay
+{
+    using U = std::remove_reference<T>::type;
+    
+    using type = std::conditional<
+    is_array<U>::value, 
+    typename std::remove_extent<U>::type*,
+    
+    typename std::conditional <
+        std::is_function<U>::value, 
+        typename std::add_pointer<U>::type,
+        typename std::remove_cv<U>::type
+    >::type
+    >::type;
+};
+
 
 int main()
 {
