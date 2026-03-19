@@ -89,14 +89,44 @@ struct is_convertible
 {
     private:
         template <typename U>
-        static auto test(void *) -> decltype(static_cast<To>(std::declval<U>()), std::true_type{});
+        static auto test(int) -> decltype(
+            static_cast<To>(std::declval<U>()), 
+            std::true_type{}
+        );
 
         template <typename U>
-        static std::false_type test(...) {}
+        static std::false_type test(...);
 
     public:
-        constexpr static bool { value = decltype(test<From(nullptr))::value };
+        constexpr static bool { value = decltype(test<From>(int))::value };
 };
+
+
+template <bool, typename T1, typename T2>
+struct conditional
+{
+    using type = T2;
+};
+template <typename T1, typename T2>
+struct conditional <true, T1, T2>
+{
+    using type = T1;
+};
+template <bool B, typename T1, typename T2>
+using conditional_t = typename conditional<B, T1, T2>::type;
+
+
+template <bool, typename T1 = void>
+struct enable_if {};
+template <bool, typename T1>
+struct enable_if<true, T1>
+{
+    using type = T1;
+};
+template <bool B, T1 = void>
+using enable_if_t = typename enable_if<B, T1>::type;
+
+
 int main()
 {
     static_assert(is_same<int, int>::value);
