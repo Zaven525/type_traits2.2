@@ -127,6 +127,30 @@ template <bool B, T1 = void>
 using enable_if_t = typename enable_if<B, T1>::type;
 
 
+template <typename Derived, typename Base>
+struct is_base_of
+{
+    static std::true_type test(const Base*);
+    static std::false_type test(...);
+
+    static constexpr inline bool value = decltype(test(static_cast<Derived*>(nullptr)))::value;
+};
+template <typename Derived, typename Base>
+using is_base_of_v = is_base_of::value;
+
+
+tmeplate <typename T>
+struct is_default_constructable
+{
+    static auto test(int) -> decltype(T(), std::true_type);
+    static std::false_type test(...);
+
+    static constexpr inline value = decltype(test(0))::value;
+};
+template <typename T>
+using is_default_constructable_v = is_default_constructable::value;
+
+
 int main()
 {
     static_assert(is_same<int, int>::value);
